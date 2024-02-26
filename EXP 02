@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+void monoalphabetic_substitution(char *plaintext, char *ciphertext, char *input) {
+    int i;
+    for (i = 0; plaintext[i] != '\0'; i++) {
+        if (isalpha(plaintext[i])) {
+            if (isupper(plaintext[i])) {
+                ciphertext[i] = toupper(input[plaintext[i] - 'A']);
+            } else {
+                ciphertext[i] = tolower(input[plaintext[i] - 'a']);
+            }
+        } else {
+            ciphertext[i] = plaintext[i];
+        }
+    }
+    ciphertext[i] = '\0';
+}
+
+int main() {
+    char plaintext[100], ciphertext[100], input[ALPHABET_SIZE+1];
+    int i;
+
+    printf("Enter plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+    plaintext[strcspn(plaintext, "\n")] = '\0';
+
+    printf("Enter the substitution alphabet (26 unique letters): ");
+    fgets(input, sizeof(input), stdin);
+    input[strcspn(input, "\n")] = '\0'; 
+
+    if (strlen(input) != ALPHABET_SIZE) {
+        printf("Error: Substitution alphabet must contain 26 unique letters.\n");
+        return 1;
+    }
+    for (i = 0; i < ALPHABET_SIZE; i++) {
+        if (!isalpha(input[i])) {
+            printf("Error: Substitution alphabet must contain only alphabetic characters.\n");
+            return 1;
+        }
+        input[i] = tolower(input[i]);
+        for (int j = i + 1; j < ALPHABET_SIZE; j++) {
+            if (input[i] == input[j]) {
+                printf("Error: Substitution alphabet must contain unique letters.\n");
+                return 1;
+            }
+        }
+    }
+
+    monoalphabetic_substitution(plaintext, ciphertext, input);
+
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
