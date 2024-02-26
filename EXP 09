@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MATRIX_SIZE 5
+void findPosition(char matrix[MATRIX_SIZE][MATRIX_SIZE], char ch, int *row, int *col) {
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            if (matrix[i][j] == ch) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
+void decryptPlayfair(char *ciphertext, char *key) {
+    char matrix[MATRIX_SIZE][MATRIX_SIZE];
+    int keyIndex = 0;
+    int usedLetters[26] = {0};
+    for (int i = 0; i < strlen(key); i++) {
+        char ch = key[i];
+        if (ch != 'J' && !usedLetters[ch - 'A']) {
+            matrix[keyIndex / MATRIX_SIZE][keyIndex % MATRIX_SIZE] = ch;
+            usedLetters[ch - 'A'] = 1;
+            keyIndex++;
+        }
+    }
+    for (char ch = 'A'; ch <= 'Z'; ch++) {
+        if (ch != 'J' && !usedLetters[ch - 'A']) {
+            matrix[keyIndex / MATRIX_SIZE][keyIndex % MATRIX_SIZE] = ch;
+            keyIndex++;
+        }
+    }
+    printf("Decrypted text using Playfair cipher:\n");
+    for (int i = 0; i < strlen(ciphertext); i += 2) {
+        char first = ciphertext[i];
+        char second = ciphertext[i + 1];
+
+        int row1, col1, row2, col2;
+        findPosition(matrix, first, &row1, &col1);
+        findPosition(matrix, second, &row2, &col2);
+
+        char decryptedFirst, decryptedSecond;
+        if (row1 == row2) {
+            decryptedFirst = matrix[row1][(col1 - 1 + MATRIX_SIZE) % MATRIX_SIZE];
+            decryptedSecond = matrix[row2][(col2 - 1 + MATRIX_SIZE) % MATRIX_SIZE];
+        }
+        else if (col1 == col2) {
+            decryptedFirst = matrix[(row1 - 1 + MATRIX_SIZE) % MATRIX_SIZE][col1];
+            decryptedSecond = matrix[(row2 - 1 + MATRIX_SIZE) % MATRIX_SIZE][col2];
+        }
+        else {
+            decryptedFirst = matrix[row1][col2];
+            decryptedSecond = matrix[row2][col1];
+        }
+
+        printf("%c%c", decryptedFirst, decryptedSecond);
+    }
+    printf("\n");
+}
+
+int main() {
+    char ciphertext[] = "KXJEYUREBEZWEHEWRYTUHEYFSKREHEGOYFIWTTTUOLKSYCAJPOBOTEIZONTXBYBNTGONEYCUZWRGDSONSXBOUYWRHEBAAHYUSEDQ";
+    char key[] = "PT109";
+
+    decryptPlayfair(ciphertext, key);
+
+    return 0;
+}
