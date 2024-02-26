@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void encrypt(char message[], int key[2][2]) {
+    int len = strlen(message);
+    int i, j;
+    int cipher[len];
+    
+    for (i = 0; i < len; i++) {
+        if (isalpha(message[i])) {
+            message[i] = toupper(message[i]) - 'A';
+        }
+    }
+    
+    for (i = 0; i < len; i += 2) {
+        cipher[i] = (key[0][0] * message[i] + key[0][1] * message[i + 1]) % 26;
+        cipher[i + 1] = (key[1][0] * message[i] + key[1][1] * message[i + 1]) % 26;
+    }
+    
+    printf("Encrypted message: ");
+    for (i = 0; i < len; i++) {
+        printf("%c", cipher[i] + 'A');
+    }
+    printf("\n");
+}
+
+int main() {
+    char message[] = "meet me at the usual place at ten rather than eight o'clock";
+    int key[2][2] = {{9, 4}, {5, 7}};
+    
+    printf("Original message: %s\n", message);
+    encrypt(message, key);
+    
+    return 0;
+}
