@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+void generateCipherAlphabet(char *keyword, char *cipherAlphabet) {
+    int keywordLength = strlen(keyword);
+    int index = 0;
+    strcpy(cipherAlphabet, keyword);
+    for (int i = 0; i < keywordLength; i++) {
+        cipherAlphabet[i] = toupper(cipherAlphabet[i]);
+        cipherAlphabet[i] -= 'A';
+    }
+    for (char ch = 'A'; ch <= 'Z'; ch++) {
+        if (!strchr(cipherAlphabet, ch - 'A')) {
+            cipherAlphabet[keywordLength + index] = ch - 'A';
+            index++;
+        }
+    }
+}
+void encryptMonoalphabeticCipher(char *plaintext, char *cipherAlphabet) {
+    printf("Encrypted text using monoalphabetic cipher:\n");
+    for (int i = 0; plaintext[i] != '\0'; i++) {
+        char currentChar = plaintext[i];
+        if (isalpha(currentChar)) {
+            char encryptedChar = cipherAlphabet[toupper(currentChar) - 'A'];
+            if (islower(currentChar))
+                encryptedChar = tolower(encryptedChar);
+            printf("%c", encryptedChar);
+        } else {
+            printf("%c", currentChar);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    char keyword[] = "CIPHER";
+    char plaintext[] = "Hello, World! This is a monoalphabetic cipher example.";
+
+    char cipherAlphabet[ALPHABET_SIZE];
+    generateCipherAlphabet(keyword, cipherAlphabet);
+
+    encryptMonoalphabeticCipher(plaintext, cipherAlphabet);
+
+    return 0;
+}
