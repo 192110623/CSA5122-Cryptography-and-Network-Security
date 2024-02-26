@@ -1,0 +1,59 @@
+#include <stdio.h>
+int exists(char key[], char c, int index) {
+    for (int i = 0; i < index; i++) {
+        if (key[i] == c) {
+            return 1;
+        }
+    }
+    return 0;
+}
+void generateKeys(char key[]) {
+    int index = 0;
+    for (char c = 'A'; c <= 'Z'; c++) {
+        if (c == 'J') continue;
+        if (!exists(key, c, index)) {
+            key[index++] = c;
+        }
+    }
+}
+
+int main() {
+    char key[25];
+    generateKeys(key);
+    int possible_keys = 1;
+    for (int i = 0; i < 25; i++) {
+        possible_keys *= (25 - i);
+    }
+    printf("Number of possible keys without considering duplicates: %d\n", possible_keys);
+    return 0;
+}
+#include <stdio.h>
+int exists(char key[], char c, int index) {
+    for (int i = 0; i < index; i++) {
+        if (key[i] == c) {
+            return 1;
+        }
+    }
+    return 0;
+}
+void generateKeys(char key[]) {
+    int index = 0;
+    for (char c = 'A'; c <= 'Z'; c++) {
+        if (!exists(key, c, index) && c != 'J') {
+            key[index++] = c;
+        }
+    }
+}
+
+int main() {
+    char key[25];
+    generateKeys(key);
+    int possible_keys = 1;
+    for (int i = 0; i < 25; i++) {
+        possible_keys *= (25 - i);
+    }
+    possible_keys /= 2;
+    
+    printf("Number of effectively unique keys: %d\n", possible_keys);
+    return 0;
+}
