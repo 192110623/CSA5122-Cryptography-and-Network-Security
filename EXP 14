@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+void encrypt(char plaintext[], int key[], int keyLength) {
+    int len = strlen(plaintext);
+    char encrypted[len + 1];
+    
+    for (int i = 0; i < len; i++) {
+        encrypted[i] = ((plaintext[i] - 'a' + key[i % keyLength]) % 26) + 'a';
+    }
+    encrypted[len] = '\0';
+    
+    printf("Encrypted Text: %s\n", encrypted);
+}
+
+int main() {
+    char plaintext[] = "hello";
+    int key[] = {3, 19, 5};
+    
+    printf("Plaintext: %s\n", plaintext);
+    encrypt(plaintext, key, sizeof(key) / sizeof(key[0]));
+    
+    return 0;
+}
