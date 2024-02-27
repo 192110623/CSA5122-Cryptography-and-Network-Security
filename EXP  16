@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define ALPHABET_SIZE 26
+void calculateFrequency(char text[], int frequency[]) {
+    int i;
+    for (i = 0; text[i] != '\0'; i++) {
+        if (text[i] >= 'a' && text[i] <= 'z') {
+            frequency[text[i] - 'a']++;
+        }
+    }
+}
+void decrypt(char ciphertext[], char key[]) {
+    int len = strlen(ciphertext);
+    char decrypted[len + 1];
+    
+    for (int i = 0; i < len; i++) {
+        if (ciphertext[i] >= 'a' && ciphertext[i] <= 'z') {
+            decrypted[i] = key[ciphertext[i] - 'a'];
+        } else {
+            decrypted[i] = ciphertext[i];
+        }
+    }
+    decrypted[len] = '\0';
+    
+    printf("Decrypted Text: %s\n", decrypted);
+}
+void frequencyAttack(char ciphertext[], int topN) {
+    int frequency[ALPHABET_SIZE] = {0};
+    calculateFrequency(ciphertext, frequency);
+    char frequencyMap[ALPHABET_SIZE];
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        frequencyMap[i] = 'a' + i;
+    }
+    for (int i = 0; i < ALPHABET_SIZE - 1; i++) {
+        for (int j = i + 1; j < ALPHABET_SIZE; j++) {
+            if (frequency[j] > frequency[i]) {
+                int tempFreq = frequency[i];
+                frequency[i] = frequency[j];
+                frequency[j] = tempFreq;
+                
+                char tempChar = frequencyMap[i];
+                frequencyMap[i] = frequencyMap[j];
+                frequencyMap[j] = tempChar;
+            }
+        }
+    }
+    for (int k = 0; k < topN && k < ALPHABET_SIZE; k++) {
+        char key[ALPHABET_SIZE];
+        for (int i = 0; i < ALPHABET_SIZE; i++) {
+            key[frequencyMap[i] - 'a'] = 'a' + i;
+        }
+        printf("Possibility #%d:\n", k + 1);
+        decrypt(ciphertext, key);
+        char temp = frequencyMap[0];
+        for (int i = 0; i < ALPHABET_SIZE - 1; i++) {
+            frequencyMap[i] = frequencyMap[i + 1];
+        }
+        frequencyMap[ALPHABET_SIZE - 1] = temp;
+    }
+}
+
+int main() {
+    char ciphertext[] = "Ymj vznhp gwtbs ktc ozruji tajw ymj qfed itl";
+    int topN = 10;
+    
+    printf("Ciphertext: %s\n", ciphertext);
+    printf("Possible plaintexts:\n");
+    frequencyAttack(ciphertext, topN);
+    
+    return 0;
+}
