@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#define MAX_SIZE 10
+int determinant_2x2(int matrix[2][2]) {
+    return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+}
+int mod_inverse(int a, int m) {
+    int x, y;
+    for (int i = 1; i < m; i++) {
+        if ((a * i) % m == 1) {
+            return i;
+        }
+    }
+    return -1;
+}
+void encrypt(char plaintext[], int key[][MAX_SIZE], int keySize) {
+    int len = strlen(plaintext);
+    int encrypted[len];
+
+    for (int i = 0; i < len; i += keySize) {
+        for (int j = 0; j < keySize; j++) {
+            int sum = 0;
+            for (int k = 0; k < keySize; k++) {
+                sum += (plaintext[i + k] - 'a') * key[j][k];
+            }
+            encrypted[i + j] = sum % 26;
+        }
+    }
+
+    printf("Encrypted Text: ");
+    for (int i = 0; i < len; i++) {
+        printf("%c", encrypted[i] + 'a');
+    }
+    printf("\n");
+}
+void decrypt(char ciphertext[], int key[][MAX_SIZE], int keySize) {
+    int len = strlen(ciphertext);
+    int decrypted[len];
+
+    int det = determinant_2x2(key);
+    int mod_inv = mod_inverse(det, 26);
+    if (mod_inv == -1) {
+        printf("Key is not invertible.\n");
+        return;
+    }
+    int inverse[MAX_SIZE][MAX_SIZE];
+    inverse[0][0] = key[1][1];
+    inverse[0][1] = -key[0][1];
+    inverse[1][0] = -key[1][0];
+    inverse[1][1] = key[0][0];
+    for (int i = 0; i < keySize; i++) {
+        for (int j = 0; j < keySize; j++) {
+            inverse[i][j] = (inverse[i][j] * mod_inv) % 26;
+            if (inverse[i][j] < 0) {
+                inverse[i][j] += 26;
+            }
+        }
+    }
+    for (int i = 0; i < len; i += keySize) {
+        for (int j = 0; j < keySize; j++) {
+            int sum = 0;
+            for (int k = 0; k < keySize; k++) {
+                sum += (ciphertext[i + k] - 'a') * inverse[j][k];
+            }
+            decrypted[i + j] = sum % 26;
+        }
+    }
+
+    printf("Decrypted Text: ");
+    for (int i = 0; i < len; i++) {
+        printf("%c", decrypted[i] + 'a');
+    
